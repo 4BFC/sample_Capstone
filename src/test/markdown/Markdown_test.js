@@ -11,7 +11,7 @@ function shuffleArray(array) {
   return array;
 }
 
-export default function Markdown_test() {
+export default function LabExam() {
   const [data, setData] = useState([]);
   const [limit, setLimit] = useState(5);
 
