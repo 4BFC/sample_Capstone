@@ -1,6 +1,5 @@
 import SelectExam from "./components/SelectExam";
 import LabExam from "./components/LabExam";
-import MD_test from "./components/Markdown_test"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 function App() {
   return (
@@ -10,7 +9,6 @@ function App() {
         <Routes>
           <Route path="/" element={<SelectExam />} />
           <Route path="/lab" element={<LabExam />} />
-          <Route path="/MD_test" element={<MD_test />} />
         </Routes>
       </div>
     </BrowserRouter>
