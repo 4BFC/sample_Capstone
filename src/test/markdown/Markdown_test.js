@@ -12,55 +12,27 @@ function shuffleArray(array) {
 }
 
 export default function LabExam() {
-  const [data, setData] = useState([]);
-  const [limit, setLimit] = useState(5);
-
-  useEffect(() => {
-    fetch('http://localhost:3001/sample')
-      .then(res => res.json())
-      .then((data) => {
-        const shuffledData = shuffleArray(data); // 데이터 배열을 랜덤하게 섞음
-        setData(shuffledData.slice(0, limit)); // limit에 맞게 잘라서 사용
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, [limit]);
-
   const markdown = `
-  # Heading 1
+    # Heading 1
 
-  This is a **bold** text and this is a *italic* text.
-  <img src="https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?wrtSn=9046601&filePath=L2Rpc2sxL25ld2RhdGEvMjAxNC8yMS9DTFM2L2FzYWRhbFBob3RvXzI0MTRfMjAxNDA0MTY=&thumbAt=Y&thumbSe=b_tbumb&wrtTy=10004" width="10" height="10" alt="img">
+    This is a **bold** text and this is a *italic* text.
 
-  <div>
-    This is an HTML <span style="color: red;">element</span>.
-  </div>
-`;
+    ![image](https://example.com/image.jpg)
+
+    - List item 1
+    - List item 2
+  `;
+
+  const customComponents = {
+    // h1을 렌더링할 때 추가할 클래스나 스타일 적용
+    h1: ({ children }) => <h1 style={{ color: 'blue' }}>{children}</h1>,
+    // 이미지를 렌더링할 때 추가할 클래스나 스타일 적용
+    img: ({ src, alt }) => <img src={src} alt={alt} style={{ maxWidth: '100%' }} />,
+  };
 
   return (
     <div>
-      <div>
-        <ReactMarkdown>{markdown}</ReactMarkdown>
-      </div>
-      <h2>Test</h2>
-      <select onChange={(e) => { setLimit(e.target.value); }}>
-        <option value={5}>5</option>
-        <option value={10}>10</option>
-        <option value={15}>15</option>
-        <option value={20}>20</option>
-      </select>
-      <Link to="/">back</Link>
-      <ol>
-        {data.map((item) => (
-          // <li key={item.id}><p>{item.question}</p>{item.options}</li>
-          <li key={item.id}>
-            <ReactMarkdown>
-              {`### ${item.question}\n\n${item.options}`}
-            </ReactMarkdown>
-          </li>
-        ))}
-      </ol>
-    </div >
+      <ReactMarkdown components={customComponents}>{markdown}</ReactMarkdown>
+    </div>
   );
 }
