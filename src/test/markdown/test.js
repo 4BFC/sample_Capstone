@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 export default function Markdown_test() {
   const [data, setData] = useState([]);
@@ -16,15 +14,6 @@ export default function Markdown_test() {
         console.error("Error fetching data:", error);
       });
   }, []);
-
-  const markdown = `
-  # Heading 1
-
-  This is a **bold** text and this is a *italic* text.
-  <div>
-    This is an HTML <span style="color: red;">element</span>.
-  </div>
-`;
 
   return (
     <div>
