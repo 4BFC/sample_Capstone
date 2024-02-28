@@ -19,7 +19,14 @@ export default function LabExam() {
       .then(res => res.json())
       .then((data) => {
         const shuffledData = shuffleArray(data); // 데이터 배열을 랜덤하게 섞음
-        setData(shuffledData.slice(0, limit)); // limit에 맞게 잘라서 사용
+
+        // 옵션 문자열에서 '①, ②, ③, ④'를 '■'으로 변경
+        const modifiedData = shuffledData.map(item => ({
+          ...item,
+          options: item.options.map(option => option.replace(/[①②③④]/g, '■'))
+        }));
+
+        setData(modifiedData.slice(0, limit)); // limit에 맞게 잘라서 사용
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -37,13 +44,18 @@ export default function LabExam() {
       </select>
       <Link to="/">back</Link>
       <ol>
+        {/* 간이로 이미지를 삽입하고 className을 작성 및 문제들의 css를 적용해본 테스트 */}
         {data.map((item) => (
-          <li key={item.id}><p>{item.question}</p>{item.options}</li>
-          // <li key={item.id}>
-          //   <ReactMarkdown>
-          //     {`### ${item.question}\n\n${item.options}`}
-          //   </ReactMarkdown>
-          // </li>
+          <li key={item.id}>
+            <h1>test</h1>
+            {/* 이미지 */}
+            <img src="https://png.pngtree.com/thumb_back/fh260/background/20230609/pngtree-three-puppies-with-their-mouths-open-are-posing-for-a-photo-image_2902292.jpg" className="test_image" style={{ width: "250px" }} />
+            {/* 질문 */}
+            <p>{item.question}</p>
+            {/* 4선지 */}
+            {item.options}
+          </li>
+
         ))}
       </ol>
     </div >
