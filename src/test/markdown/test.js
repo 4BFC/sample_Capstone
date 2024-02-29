@@ -16,6 +16,26 @@ export default function LabExam() {
       });
   }, [limit]);
 
+  //HTML 문자열에 포함된 <img> 태그를 실제 이미지로 변경하는 함수
+  const parseImageTag = (htmlString) => {
+    // 정규식을 사용하여 <img src=1> 문자열을 찾습니다.
+    const imgRegex = /<img\s+src=1\s*\/?>/g;
+    // 대체할 이미지 태그로 교체합니다.
+    return htmlString.replace(imgRegex, '<img src="https://png.pngtree.com/thumb_back/fh260/background/20230609/pngtree-three-puppies-with-their-mouths-open-are-posing-for-a-photo-image_2902292.jpg" />');
+  };
+
+
+  // 수정된 코드
+  // const parseImageTag = (htmlString) => {
+  //   const imgRegex = /<img.*?src="(.*?)".*?\/?>/g;
+  //   return htmlString.replace(imgRegex, (match, imageUrl) => {
+  //     // 원하는 이미지 URL로 대체
+  //     const customImageUrl = "https://png.pngtree.com/thumb_back/fh260/background/20230609/pngtree-three-puppies-with-their-mouths-open-are-posing-for-a-photo-image_2902292.jpg";
+  //     return `<img src="${customImageUrl}" />`;
+  //   });
+  // };
+
+
   return (
     <div>
       <h2>Test</h2>
@@ -33,7 +53,7 @@ export default function LabExam() {
             {/* 이미지 */}
             <img src="https://png.pngtree.com/thumb_back/fh260/background/20230609/pngtree-three-puppies-with-their-mouths-open-are-posing-for-a-photo-image_2902292.jpg" className="test_image" style={{ width: "250px" }} />
             {/* 질문 */}
-            <p>{item.question}</p>
+            <p dangerouslySetInnerHTML={{ __html: parseImageTag(item.question) }} />
             {/* 4선지 */}
             {item.options.map((option, index) => (
               <div key={index}>{option}</div>
