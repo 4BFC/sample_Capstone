@@ -9,10 +9,15 @@ export default function LabExam() {
     fetch('http://localhost:3001/sample')
       .then(res => res.json())
       .then((data) => {
-        // 데이터를 가져온 후, 제한된 개수만큼 자르고 섞음
+
+        /* // 데이터를 가져온 후, 제한된 개수만큼 자르고 섞음
         const limitedData = data.slice(0, limit);
         const shuffledData = shuffleArray(limitedData);
         setData(shuffledData);
+        */
+
+        // 데이터를 가져온 후, 제한된 개수만큼 자른다.
+        setData(data.slice(0, limit));
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
