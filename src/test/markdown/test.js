@@ -17,24 +17,12 @@ export default function LabExam() {
   }, [limit]);
 
   //HTML 문자열에 포함된 <img> 태그를 실제 이미지로 변경하는 함수
-  const parseImageTag = (htmlString) => {
-    // 정규식을 사용하여 <img src=1> 문자열을 찾습니다.
-    const imgRegex = /<img\s+src=1\s*\/?>/g;
-    // 대체할 이미지 태그로 교체합니다.
-    return htmlString.replace(imgRegex, '<img src="https://png.pngtree.com/thumb_back/fh260/background/20230609/pngtree-three-puppies-with-their-mouths-open-are-posing-for-a-photo-image_2902292.jpg" />');
+  const parseImageTag = (question_img, question_img_url, question_img_class) => {
+    // 정규식을 사용하여 <img src=1> 문자열을 찾는다.
+    const imgRegex = /<img.*?\/?>/g;
+    // 대체할 이미지 태그로 교체한다.
+    return question_img.replace(imgRegex, `<img src="${question_img_url}" className="${question_img_class}" />`);
   };
-
-
-  // 수정된 코드
-  // const parseImageTag = (htmlString) => {
-  //   const imgRegex = /<img.*?src="(.*?)".*?\/?>/g;
-  //   return htmlString.replace(imgRegex, (match, imageUrl) => {
-  //     // 원하는 이미지 URL로 대체
-  //     const customImageUrl = "https://png.pngtree.com/thumb_back/fh260/background/20230609/pngtree-three-puppies-with-their-mouths-open-are-posing-for-a-photo-image_2902292.jpg";
-  //     return `<img src="${customImageUrl}" />`;
-  //   });
-  // };
-
 
   return (
     <div>
@@ -47,13 +35,10 @@ export default function LabExam() {
       </select>
       <Link to="/">back</Link>
       <ol>
-        {data.map((item) => (
-          <li key={item.id}>
-            <h1>test</h1>
-            {/* 이미지 */}
-            <img src="https://png.pngtree.com/thumb_back/fh260/background/20230609/pngtree-three-puppies-with-their-mouths-open-are-posing-for-a-photo-image_2902292.jpg" className="test_image" style={{ width: "250px" }} />
+        {data.map((item, index) => (
+          <li key={index}>
             {/* 질문 */}
-            <p dangerouslySetInnerHTML={{ __html: parseImageTag(item.question) }} />
+            <p dangerouslySetInnerHTML={{ __html: parseImageTag(item.question, item.image, "test_image") }} />
             {/* 4선지 */}
             {item.options.map((option, index) => (
               <div key={index}>{option}</div>
