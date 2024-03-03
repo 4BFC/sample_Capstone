@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import parse from 'html-react-parser'; // html-react-parser 모듈 사용
 
 export default function LabExam() {
   const [data, setData] = useState([]);
@@ -17,11 +18,11 @@ export default function LabExam() {
   }, [limit]);
 
   //HTML 문자열에 포함된 <img> 태그를 실제 이미지로 변경하는 함수
-  const parseImageTag = (question_img, question_img_url, question_img_class) => {
+  const parseImageTag = (question, question_img_url, question_img_class) => {
     // 정규식을 사용하여 <img src=1> 문자열을 찾는다.
     const imgRegex = /<img.*?\/?>/g;
     // 대체할 이미지 태그로 교체한다.
-    return question_img.replace(imgRegex, `<img src="${question_img_url}" className="${question_img_class}" />`);
+    return question.replace(imgRegex, `<img src="${question_img_url}" className="${question_img_class}" />`);
   };
 
   return (
@@ -38,7 +39,7 @@ export default function LabExam() {
         {data.map((item, index) => (
           <li key={index}>
             {/* 질문 */}
-            <p dangerouslySetInnerHTML={{ __html: parseImageTag(item.question, item.image, "test_image") }} />
+            <p>{parse(parseImageTag(item.question, item.image, "test_image"))}</p>
             {/* 4선지 */}
             {item.options.map((option, index) => (
               <div key={index}>{option}</div>
