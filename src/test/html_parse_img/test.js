@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import parse from 'html-react-parser';
+import "./style.css";
 
 export default function LabExam() {
   const [data, setData] = useState([]);
@@ -24,17 +25,15 @@ export default function LabExam() {
     if (Array.isArray(questionImgUrls) && questionImgUrls.length > 0) {
       // 이미지 URL 배열의 각 요소를 반복하여 이미지 태그를 생성하고 질문에 삽입합니다.
       questionImgUrls.forEach((imageUrl, index) => {
-        // 이미지 태그를 생성합니다. index + 1을 사용하여 이미지 태그의 src 속성에 대응하는 번호를 삽입합니다.
-        const imgTag = `<img src="${imageUrl}"/>`;
-
-        // 이미지 태그를 질문에 삽입합니다.
-        parsedQuestion = parsedQuestion.replace(`<img src=${index + 1}/>`, imgTag);
+        // 정규 표현식을 사용하여 이미지 태그를 대체합니다.
+        const regex = new RegExp(`src=${index + 1}`, 'g');
+        parsedQuestion = parsedQuestion.replace(regex, `src="${imageUrl}"`);
       });
     }
     else {
-      const imgRegex = /<img.*?\/?>/g;
       // 이미지 URL 배열이 없는 경우 직접적으로 이미지 태그를 대체합니다.
-      parsedQuestion = parsedQuestion.replace(imgRegex, `<img src="${questionImgUrls}"/>`);
+      const imgRegex = /src=\d+/g;
+      parsedQuestion = parsedQuestion.replace(imgRegex, `src="${questionImgUrls}"`);
     }
 
     return parsedQuestion;
@@ -55,6 +54,7 @@ export default function LabExam() {
           <li key={index}>
             {/* 질문 */}
             <p>{parse(parseImageTag(item.question, item.images))}</p>
+            {/* <div>{parse(apiText)}</div> */}
             {/* 4선지 */}
             {item.options.map((option, index) => (
               <div key={index}>{option}</div>

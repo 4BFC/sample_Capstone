@@ -1,0 +1,10 @@
+.test_left {
+  width: 150px;
+  height: 150px;
+  /* float: left; */
+}
+
+.test_right {
+  width: 100px;
+  height: 100px;
+}
