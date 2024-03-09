@@ -19,6 +19,7 @@ export default function LabExam() {
       });
   }, [limit]);
 
+  //클래스 추가
   // inside 이미지 파싱 후 렌더링 함수 수정
   const parseImageTag = (question, questionImgUrls) => {
     let parsedQuestion = question;
@@ -26,14 +27,16 @@ export default function LabExam() {
     // 이미지 URL 배열이 정의되었는지 확인합니다.
     if (Array.isArray(questionImgUrls) && questionImgUrls.length > 0) {
       // 이미지 URL 배열의 각 요소를 반복하여 이미지 태그를 생성하고 질문에 삽입합니다.
-      questionImgUrls.forEach((imageUrl, index) => {
-        // 정규 표현식을 사용하여 이미지 태그를 대체합니다.
-        const regex = new RegExp(`src=${index}`, 'g');
+      questionImgUrls.forEach((imageUrl) => {
+        // 정규 표현식 리터럴을 사용하여 이미지 태그를 대체합니다.
+        const regex = /src=\d+/g;
         parsedQuestion = parsedQuestion.replace(regex, `src="${imageUrl.url}"`);
       });
     }
     return parse(parsedQuestion);
   };
+
+
 
   // outside 이미지 렌더링 함수 수정
   const renderImages = (imageData) => {
@@ -45,8 +48,7 @@ export default function LabExam() {
           alt={`Image ${imageIndex}`}
           style={{ width: '100%' }}
         />
-      ))
-        ;
+      ));
     } else {
       return null;
     }
@@ -67,11 +69,10 @@ export default function LabExam() {
           <li key={index} style={{ marginBottom: '70px', border: '1px solid black', width: '70%' }}>
             {/* 질문 */}
             <p>{item.id}. {parseImageTag(item.question, item.question_images_in)}</p>
-            {/* {renderQuestionWithImages(item.question, item.question_images_in)} */}
             {/* 이미지 렌더링 */}
             <div>{renderImages(item.question_images_out)}</div>
             {/* 4선지 */}
-            <ol>
+            <ol style={{ listStyleType: 'none' }}>
               {item.options.map((option, optionIndex) => (
                 <li key={optionIndex}>{option}</li>
               ))}
