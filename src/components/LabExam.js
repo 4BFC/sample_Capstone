@@ -18,17 +18,10 @@ export default function LabExam() {
     fetch('http://localhost:3001/sample')
       .then(res => res.json())
       .then((data) => {
-        const shuffledData = shuffleArray(data); // 데이터 배열을 랜덤하게 섞음
-        /** 
-         * // 옵션 문자열에서 '①, ②, ③, ④'를 '■'으로 변경
-                const modifiedData = shuffledData.map(item => ({
-                  ...item,
-                  options: item.options.map(option => option.replace(/[①②③④]/g, '■'))
-                }));
-        
-                setData(modifiedData.slice(0, limit)); // limit에 맞게 잘라서 사용
-        */
-        setData(shuffledData.slice(0, limit)); // limit에 맞게 잘라서 사용
+        setData(data.slice(0, limit)); // slice를 통해서 10개의 아이템만 가져올 것 -> useEffect의 특징상 한번 호출하고 다시 re-render가 되지 않는다. 따라서 useEffect를 limit에 의존 시켜야한다.
+        // map((data)=>{cons})
+        console.log(data); //data 배열 값 확인
+        console.log(data[0]); //data 배열 값 확인
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -54,15 +47,8 @@ export default function LabExam() {
       </select>
       <Link to="/">back</Link>
       <ol>
-        {/* 간이로 이미지를 삽입하고 className을 작성 및 문제들의 css를 적용해본 테스트 */}
-        {data.map((item) => (
-          <li key={item.id}>
-            {/* 질문 */}
-            <p>{item.question}</p>
-            {/* 4선지 */}
-            {item.options}
-          </li>
-
+        {data.map((data) => (
+          <li key={data.id}><p>{data.question}</p>{data.options}</li>
         ))}
       </ol>
     </div >
