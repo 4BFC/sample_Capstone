@@ -30,7 +30,7 @@ export default function LabExam() {
       questionImgUrls.forEach((imageUrl) => {
         // 정규 표현식 리터럴을 사용하여 이미지 태그를 대체합니다.
         const regex = /src=\d+/g;
-        parsedQuestion = parsedQuestion.replace(regex, `src="${imageUrl.url}"`);
+        parsedQuestion = parsedQuestion.replace(regex, `src="${imageUrl.url}" class="${imageUrl.attribute}"`);
       });
     }
     return parse(parsedQuestion);
@@ -68,7 +68,7 @@ export default function LabExam() {
         {data.map((item, index) => (
           <li key={index} style={{ marginBottom: '70px', border: '1px solid black', width: '70%' }}>
             {/* 질문 */}
-            <p>{item.id}. {parseImageTag(item.question, item.question_images_in)}</p>
+            <p>{index + 1}. {parseImageTag(item.question, item.question_images_in)}</p>
             {/* 이미지 렌더링 */}
             <div>{renderImages(item.question_images_out)}</div>
             {/* 4선지 */}
