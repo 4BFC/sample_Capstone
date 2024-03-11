@@ -9,15 +9,10 @@ export default function LabExam() {
     fetch('http://localhost:3001/sample')
       .then(res => res.json())
       .then((data) => {
-
-        /* // 데이터를 가져온 후, 제한된 개수만큼 자르고 섞음
-        const limitedData = data.slice(0, limit);
-        const shuffledData = shuffleArray(limitedData);
-        setData(shuffledData);
-        */
-
-        // 데이터를 가져온 후, 제한된 개수만큼 자른다.
-        setData(data.slice(0, limit));
+        setData(data.slice(0, limit)); // slice를 통해서 10개의 아이템만 가져올 것 -> useEffect의 특징상 한번 호출하고 다시 re-render가 되지 않는다. 따라서 useEffect를 limit에 의존 시켜야한다.
+        // map((data)=>{cons})
+        console.log(data); //data 배열 값 확인
+        console.log(data[0]); //data 배열 값 확인
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -51,8 +46,8 @@ export default function LabExam() {
       </select>
       <Link to="/">back</Link>
       <ol>
-        {data.map((item) => (
-          <li key={item.id}><p>{item.question}</p>{item.options}</li>
+        {data.map((data) => (
+          <li key={data.id}><p>{data.question}</p>{data.options}</li>
         ))}
       </ol>
     </div>
