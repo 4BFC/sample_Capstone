@@ -1,7 +1,6 @@
 import SelectExam from "./components/SelectExam";
 import LabExam from "./components/LabExam";
 import ParsingImageTest from "./test/html_parse_img/parsingImageTest"
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 function App() {
   return (
@@ -12,7 +11,6 @@ function App() {
           <Route path="/" element={<SelectExam />} />
           <Route path="/lab" element={<LabExam />} />
           <Route path="/htmlParse" element={<ParsingImageTest />} />
-
         </Routes>
       </div>
     </BrowserRouter>
