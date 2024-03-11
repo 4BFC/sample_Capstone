@@ -1,30 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import './SelectExam.css';
 import axios from 'axios';
 
 export default function SelectExam() {
   const navigate = useNavigate();
-  const [examType, setExamType] = useState(); //시험지 종류
-  const [checkType, setCheckType] = useState([]); //체크박스 리스트
+  const [selectedExamType, setSelectedExamType] = useState(); //시험지 종류
+  const [selectedSubExamType, setSelectedSubExamType] = useState(); // 세부 시험지 종류
+  const [tags, setTags] = useState([]); // 태그 종류
+  const [selectedTags, setSelectedTags] = useState([]); // 선택된 태그 종류
   const [search, setSearch] = useState(""); // 검색어
-  const [keywords, setKeywords] = useState([]);
-  const [select, setSelect] = useState(20);// 문제 문항 수 select 값
-  const [isClicked, setIsClicked] = useState(false); // 
+  const [keywords, setKeywords] = useState([]); // 검색 키워드
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState(20);// 선택된 문제 문항 수 
   const [showModal, setShowModal] = useState(false); // 모달 표시 여부
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedQuestions, setSelectedQuestions] = useState(null);
 
-  //체크박스 중복 불가
-  // function setCheckType_Fn(e) {
-  //   const value = e.target.value;
-  //   if (e.target.checked) {
-  //     console.log(e.target.value);
-  //     setCheckType((prevCheckType) => [...prevCheckType, value]);
-  //   } else if (!e.target.checked) {
-  //     setCheckType((prevCheckType) => prevCheckType.filter(item => item !== value)); // item이 e.target.value처럼 target이 되었는지 확인
-  //   }
-  // }
+
+  // 태그 가져오기
+  useEffect(() => {
+    if (selectedSubExamType) {
+      // API 요청을 보내서 태그 데이터를 가져옴
+      axios.get(`http://54.180.211.174/api/v1/exams/${Number(selectedSubExamType)}/type`)
+        .then(response => {
+          console.log(response.data.tags)
+          setTags(response.data.tags); // 태그 데이터 설정
+        })
+        .catch(error => {
+          console.error('Tags Error fetching data:', error);
+        });
+    }
+  }, [selectedSubExamType]); // selectedSubExamType가 바뀔 때마다 실행되도록 설정
+
+
 
   // 모달 열기
    const openModal = () => {
@@ -34,85 +40,99 @@ export default function SelectExam() {
   // 모달 닫기
   const closeModal = () => {
     setShowModal(false);
-    setKeywords([]); // 키워드 초기화
     setSelectedTags([]); // 선택된 태그 초기화
-    setSelectedQuestions(null); // 선택된 문항 초기화
+    setKeywords([]); // 키워드 초기화
+    setSelectedQuestionCount(20); // 문항수 초기화
+
   }
 
-
-  const handleButtonClick = (e) => {
-    setExamType(e.target.value);
-    // console.log(e.target.value);
-    setIsClicked(true); // Button 클릭 상태를 true로 설정
+  // 시험지 종류 선택
+  const handleExamTypeClick = (e) => {
+    setSelectedExamType(e.target.value);
   }
 
-  const handleKeyDown = (e) => {
-    if(e.key === 'Enter'){
+  // 키워드 추가
+  const handlePushKeyword = (e) => {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      setKeywords([...keywords, search]); // 입력된 단어를 키워드 배열에 추가
-      setSearch(''); // 검색어를 초기화
+      if (!e.nativeEvent.isComposing) { 
+        setKeywords([...keywords, search.trim()]); // 입력된 단어를 키워드 배열에 추가
+        setSearch(''); // 검색어를 초기화
+      }
     }
-  }
-
-  const handelDeleteKeyword = (index) => {
+  };
+  
+  // 키워드 삭제
+  const handelDeleteKeyword = (index) => { 
     const deleteKeywords = [...keywords];
     deleteKeywords.splice(index, 1); // 선택된 인덱스의 키워드를 제거
     setKeywords(deleteKeywords); // 변경된 키워드 배열을 업데이트
   }
 
-  const handleTagClick = (e) => {
-    e.preventDefault();
-    const value = e.target.value;
-    if (selectedTags.includes(value)) {
-      setSelectedTags(selectedTags.filter(tag => tag !== value));
+  // 태그 선택
+  const handleTagClick = (tag) => {
+    if (selectedTags.includes(tag)) {
+        setSelectedTags(selectedTags.filter(selectedTag => selectedTag !== tag));
     } else {
-      setSelectedTags([...selectedTags, value]);
+        setSelectedTags([...selectedTags, tag]);
     }
   }
 
-  const handleQuestionClick = (e) => {
+  // 문항 수 선택
+  const handleQuestionCountClick = (e) => {
     e.preventDefault();
-    setSelectedQuestions(e.target.value);
+    setSelectedQuestionCount(parseInt(e.target.textContent));
   }
 
-  
+  // 제출  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedQuestions) {
-      alert("문항수는 하나를 꼭 선택해야합니다.");
-      return;
-    }
-  
+    
     const format_info = {
-      exam_title: examType,
-      exam_id: checkType,
+      exam_title: selectedExamType,
+      exam_id: Number(selectedSubExamType),
       tags: selectedTags,
       includes: keywords,
-      count: Number(select),
+      count: Number(selectedQuestionCount),
     };
   
-    console.log(format_info);
+    // console.log(format_info);
 
-    // const url = `http://13.125.253.41:8080/api/v1/exams/${checkType}/questions?count=${format_info.count}&tags=${format_info.tags.join(',')}&includes=${format_info.includes.join(',')}`;
+    let url = `http://54.180.211.174/api/v1/exams/${Number(selectedSubExamType)}/questions?count=${format_info.count}`;
 
-    // axios.post(url, format_info)
-    //     .then((response) => {
-    //         console.log(response.data);
-    //         navigate(`/lab`);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //     });
+    // 태그 추가
+    if (format_info.tags.length > 0) {
+      format_info.tags.forEach(tag => {
+        url += `&tags=${tag}`;
+      });
+    }
 
-    navigate(`/lab`);
+    // 포함어 추가
+    if (format_info.includes.length > 0) {
+      format_info.includes.forEach(include => {
+        url += `&includes=${include}`;
+      });
+    }
+    
+    console.log(url);
+
+
+    // 유형 정보 API 전달
+    axios.post(url, format_info)
+      .then((response) => {
+        console.log(response.data);
+        navigate(url);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
   }
   
-
   return (
     <div>
        <div className="examList">
-        <button value="운전면허" onClick={handleButtonClick} >운전면허</button>
+        <button value="운전면허" onClick={handleExamTypeClick} >운전면허</button>
         <button value="수능">수능</button>
         <button value="컴퓨터활용능력">컴퓨터활용능력</button>
       </div>
@@ -120,14 +140,15 @@ export default function SelectExam() {
     <form action="" onSubmit={handleSubmit} >
      
     
-      {isClicked && (
-          <select onChange={(e)=> {setCheckType(e.target.value); openModal(); }}>
+      {selectedExamType && (
+          <select onChange={(e)=> {setSelectedSubExamType(e.target.value); openModal(); }}>
+            <option value="">선택</option>
             <option value={1}>1종 보통</option>
-            <option value={"2"}>2종 보통</option>
-            <option value={"대형"}>대형</option>
-            <option value={"특수"}>특수</option>
-            <option value={"소형"}>소형</option>
-            <option value={"원동기"}>원동기</option>
+            <option value={2}>2종 보통</option>
+            <option value={3}>대형</option>
+            <option value={4}>특수</option>
+            <option value={5}>소형</option>
+            <option value={6}>원동기</option>
           </select>
         )}
       
@@ -137,22 +158,22 @@ export default function SelectExam() {
             <button onClick={closeModal}> X </button>
             <br />
             <span> 태그 </span>
-              <div className="tags">
-              <button 
-                value="상황" 
-                onClick={handleTagClick}
-                style={{backgroundColor: selectedTags.includes("상황") ? "blue" : "initial"}}
-              ># 상황</button>
-              <button 
-                value="표지" 
-                onClick={handleTagClick}
-                style={{backgroundColor: selectedTags.includes("표지") ? "blue" : "initial"}}
-              ># 표지</button>
-              </div>
+            <div className="tags">
+            {tags.map(tag => (
+              <button
+                  key={tag}
+                  type="button"
+                  onClick={() => handleTagClick(tag)}
+                  style={{ backgroundColor: selectedTags.includes(tag) ? "blue" : "initial" }}
+              >
+                  #{tag}
+              </button>
+             ))}
+            </div>
             <span> 검색어 </span>
             <input type="text" value={search} 
             onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={handleKeyDown}/>
+            onKeyDown={handlePushKeyword}/>
             <br />
             {keywords.map((keyword, index) => (
               <div key={index} >
@@ -163,13 +184,13 @@ export default function SelectExam() {
             <br />
             <span>문항수 </span>
             <div>
-              {[20, 15, 10, 5].map(questionCount => (
-                  <button 
-                    key={questionCount}
-                    value={questionCount}
-                    onClick={handleQuestionClick}
-                    style={{backgroundColor: selectedQuestions === questionCount.toString() ? "blue" : "initial"}}
-                  >{questionCount}</button>
+            {[5, 10, 15, 20].map(count => (
+                <button 
+                  key={count}
+                  value={count}
+                  onClick={handleQuestionCountClick}
+                  style={{backgroundColor: selectedQuestionCount === count ? "blue" : "initial"}}
+                >{count}</button>
                 ))}
              </div>
 
